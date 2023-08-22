@@ -56,7 +56,8 @@ async def handle_message(update: Update, context) -> None:
             images = [os.path.join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('.jpg')]
             random_image = random.choice(images)
             with open(random_image, 'rb') as photo:
-                await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)
+                await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo, reply_to_message_id=update.message.message_id)
+
             break  # Выходим из цикла после отправки изображения
 
 
