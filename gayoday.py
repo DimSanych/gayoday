@@ -40,6 +40,6 @@ if __name__ == "__main__":
 
 # Функция приветствия при добавлении бота в группу
 async def greet_new_members(update: Update, context) -> None:
-    for user in update.message.new_chat_members:
+    for user in update.message.NEW_CHAT_MEMBERS:
         if user.username == context.bot.username:
             await update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
