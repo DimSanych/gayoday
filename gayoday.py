@@ -6,8 +6,8 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def main() -> None:
     TOKEN = "6696148424:AAG6-hZc4c2SAEEJwpU5QSp5smdK77ijcGI"
-    updater = Updater(TOKEN)
-
+    updater =   Updater(token=TOKEN, use_context=True)
+    
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
 
