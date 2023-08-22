@@ -1,6 +1,7 @@
 import logging
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, Filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
+
 
 # Включаем логирование
 logging.basicConfig(
@@ -25,8 +26,8 @@ def main() -> None:
 
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(Filters.TEXT & ~Filters.COMMAND, echo))
-    application.add_handler(MessageHandler(Filters.STATUS_UPDATE.NEW_CHAT_MEMBERS, greet_new_members))
+    #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(MessageHandler(filters.STATUS_UPDATE.NEW_CHAT_MEMBERS, greet_new_members))
 
     # Запускаем бота
     application.run_polling()
