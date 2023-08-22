@@ -39,6 +39,8 @@ def main() -> None:
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
+    application.add_handler(MessageHandler(filters.TEXT, handle_message))
+
 
     # Запускаем бота
     application.run_polling()
