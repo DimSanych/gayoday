@@ -1,7 +1,13 @@
 import logging
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram.ext import MessageFilter
 
+class NewChatMembersFilter(MessageFilter):
+    def filter(self, message):
+        return bool(message.new_chat_members)
+
+new_chat_members_filter = NewChatMembersFilter()
 
 # Включаем логирование
 logging.basicConfig(
@@ -27,7 +33,8 @@ def main() -> None:
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    application.add_handler(MessageHandler(filters.NEW_CHAT_MEMBERS, greet_new_members))
+    application.add_handler(MessageHandler(new_chat_members_filter, greet_new_members))
+
 
 
     # Запускаем бота
