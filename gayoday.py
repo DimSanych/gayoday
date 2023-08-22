@@ -1,6 +1,6 @@
 import logging
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, MessageHandler, Filters
 
 # Включаем логирование
 logging.basicConfig(
@@ -16,8 +16,8 @@ async def start(update: Update, context) -> None:
     )
 
 # Обработчик для повторения отправленных сообщений
-async def echo(update: Update, context) -> None:
-    await update.message.reply_text(update.message.text)
+#async def echo(update: Update, context) -> None:
+#    await update.message.reply_text(update.message.text)
 
 def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
@@ -25,10 +25,18 @@ def main() -> None:
 
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(MessageHandler(Filters.TEXT & ~Filters.COMMAND, echo))
+    application.add_handler(MessageHandler(Filters.STATUS_UPDATE.NEW_CHAT_MEMBERS, greet_new_members))
 
     # Запускаем бота
     application.run_polling()
 
 if __name__ == "__main__":
     main()
+
+
+# Функция приветствия при добавлении бота в группу
+async def greet_new_members(update: Update, context) -> None:
+    for user in update.message.new_chat_members:
+        if user.username == context.bot.username:
+            await update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
