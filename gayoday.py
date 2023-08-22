@@ -27,9 +27,7 @@ def main() -> None:
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    from telegram.ext.filters import _NewChatMembers
-
-    application.add_handler(MessageHandler(_NewChatMembers(), greet_new_members))
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
 
 
 
