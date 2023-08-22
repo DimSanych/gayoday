@@ -21,6 +21,11 @@ async def greet_new_members(update: Update, context) -> None:
         if user.username == context.bot.username:
             await update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
 
+        else:
+            await update.message.reply_text("Мойдодыр, принимай пополнение!")
+            with open("moydodir.jpg", "rb") as photo:
+                await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)        
+
 def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
     application = Application.builder().token("6696148424:AAG6-hZc4c2SAEEJwpU5QSp5smdK77ijcGI").build()
