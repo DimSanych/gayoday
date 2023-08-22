@@ -1,6 +1,11 @@
 import logging
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
+import random
+import os
+from telegram import InputFile
+
+
 
 # Включаем логирование
 logging.basicConfig(
@@ -18,6 +23,7 @@ async def start(update: Update, context) -> None:
 # Функция приветствия при добавлении бота в группу
 async def greet_new_members(update: Update, context) -> None:
     for user in update.message.new_chat_members:
+        #
         if user.username == context.bot.username:
             await update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
 
@@ -36,6 +42,24 @@ def main() -> None:
 
     # Запускаем бота
     application.run_polling()
+
+# Список фраз, на которые бот будет реагировать
+PIDOR_PHRASES = ["ты пидр", "ты пидар", "ты пидор"]
+
+async def handle_message(update: Update, context) -> None:
+    user_message = update.message.text.lower()  # Преобразуем сообщение в нижний регистр
+    for phrase in PIDOR_PHRASES:
+        if phrase in user_message:
+            images_dir = "tipidr"
+
+            # Если одна из ключевых фраз найдена в сообщении
+            images = [os.path.join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('.jpg')]
+            random_image = random.choice(images)
+            with open(random_image, 'rb') as photo:
+                await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)
+            break  # Выходим из цикла после отправки изображения
+
+
 
 if __name__ == "__main__":
     main()
