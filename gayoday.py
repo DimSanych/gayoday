@@ -46,6 +46,7 @@ def main() -> None:
 # Список фраз, на которые бот будет реагировать
 PIDOR_PHRASES = ["ты пидр", "ты пидар", "ты пидор"]
 
+#Функция ответа ботом на оскорбления
 async def handle_message(update: Update, context) -> None:
     user_message = update.message.text.lower()  # Преобразуем сообщение в нижний регистр
     for phrase in PIDOR_PHRASES:
@@ -57,6 +58,7 @@ async def handle_message(update: Update, context) -> None:
             random_image = random.choice(images)
             with open(random_image, 'rb') as photo:
                 await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo, reply_to_message_id=update.message.message_id)
+                await update.message.reply_text("А может ты пидр?")
 
             break  # Выходим из цикла после отправки изображения
 
