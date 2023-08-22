@@ -19,7 +19,7 @@ async def start(update: Update, context) -> None:
 async def greet_new_members(update: Update, context) -> None:
     for user in update.message.new_chat_members:
         if user.username == context.bot.username:
-            await update.message.reply_text("Привет! Я здесь, чтобы помочь!")
+            await update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
 
 def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
