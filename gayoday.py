@@ -4,6 +4,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 import random
 import os
 from telegram import InputFile
+import json
 
 
 
@@ -32,53 +33,7 @@ async def greet_new_members(update: Update, context) -> None:
             with open("moydodir.jpg", "rb") as photo:
                 await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)        
 
-# # Функция "Гей дня"
-# async def gay_of_the_day(update: Update, context) -> None:
-#     chat_id = update.effective_chat.id
-#     members = await context.bot.get_chat_members_count(chat_id)
-#     random_member = random.randint(1, members)
-#     user = await context.bot.get_chat_member(chat_id, random_member)
-#     score = random.randint(0, 100)
-#     await update.message.reply_text(f"Гей дня: {user.user.first_name} с гей-рейтингом {score}%!")
-
-# Функция "Гей дня"
-async def gay_of_the_day(update: Update, context) -> None:
-    chat_id = update.effective_chat.id
-    members_list = await context.bot.get_chat_members(chat_id)
-    members_count = len(members_list)
-    
-    # Словарь для хранения участников и их рейтинга
-    members_rating = {}
-    
-    # Проходимся по каждому участнику и присваиваем ему рейтинг
-    for i in range(1, members_count + 1):
-        user = members_list[i].user
-        score = random.randint(0, 100)
-        members_rating[user.first_name] = score
-    
-    # Сортируем участников по рейтингу
-    sorted_members = sorted(members_rating.items(), key=lambda x: x[1], reverse=True)
-    
-    # Формируем сообщение
-    message = "Насколько ты сегодня пидрила:\n"
-    for member, rating in sorted_members:
-        message += f"{member}: {rating}%\n"
-    
-    await update.message.reply_text(message)  
-
-def main() -> None:
-    # Создаем экземпляр бота и передаем ему токен вашего бота
-    application = Application.builder().token("6696148424:AAG6-hZc4c2SAEEJwpU5QSp5smdK77ijcGI").build()
-
-    # Регистрируем обработчики
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("whoispidor", gay_of_the_day))
-    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
-    application.add_handler(MessageHandler(filters.TEXT, handle_message))
-
-
-    # Запускаем бота
-    application.run_polling()
+#Функция ответа на ключевые фразы
 
 # Список фраз, на которые бот будет реагировать
 PIDOR_PHRASES = ["пидр", "пидар", "пидор"]
@@ -89,7 +44,7 @@ async def handle_message(update: Update, context) -> None:
         user_message = update.message.text.lower()  # Преобразуем сообщение в нижний регистр
         for phrase in PIDOR_PHRASES:
             if phrase in user_message:
-                images_dir = "tipidr"
+                images_dir = "/tipidr"
 
             # Если одна из ключевых фраз найдена в сообщении
                 images = [os.path.join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('.jpg')]
@@ -99,6 +54,99 @@ async def handle_message(update: Update, context) -> None:
                 # await update.message.reply_text("А может ты пидр?")
 
                 break  # Выходим из цикла после отправки изображения
+
+
+
+
+# #Функционал Гея дня
+
+# # Словарь для хранения участников каждой группы
+# group_members = {}
+
+# #Отслеживание активных участников
+# async def track_active_members(update: Update, context) -> None:
+#     chat_id = update.effective_chat.id
+#     user_id = update.message.from_user.id
+    
+#     if chat_id not in group_members:
+#         group_members[chat_id] = set()
+    
+#     group_members[chat_id].add(user_id)
+
+# #Отслеживание новых участников и исключение покинувших
+# async def track_members_status(update: Update, context) -> None:
+#     chat_id = update.effective_chat.id
+
+#     for user in update.message.new_chat_members:
+#         if chat_id not in group_members:
+#             group_members[chat_id] = set()
+#         group_members[chat_id].add(user.id)
+    
+#     if update.message.left_chat_member:
+#         user_id = update.message.left_chat_member.id
+#         if chat_id in group_members and user_id in group_members[chat_id]:
+#             group_members[chat_id].remove(user_id)
+
+# #Сохранение и загрузка данных из JSON
+# def save_to_json():
+#     with open("group_members.json", "w") as file:
+#         json.dump(group_members, file)
+
+# def load_from_json():
+#     global group_members
+#     try:
+#         with open("group_members.json", "r") as file:
+#             group_members = json.load(file)
+#     except FileNotFoundError:
+#         group_members = {}
+
+#Функция пидора дня
+# async def gay_of_the_day(update: Update, context) -> None:
+#     # Загружаем актуальный список участников из JSON
+#     load_from_json()
+
+#     chat_id = update.effective_chat.id
+#     if chat_id in group_members:
+#         members_list = list(group_members[chat_id])
+        
+#         # Словарь для хранения результатов бросков
+#         dice_rolls = {}
+        
+#         for member_id in members_list:
+#             member = await context.bot.get_chat_member(chat_id, member_id)
+#             dice_rolls[member.user.first_name] = random.randint(0, 100)
+        
+#         # Сортируем участников по результатам броска в порядке убывания
+#         sorted_rolls = sorted(dice_rolls.items(), key=lambda x: x[1], reverse=True)
+        
+#         # Формируем сообщение с топ-5 участниками
+#         message = "Топ-5 участников сегодня:\n"
+#         for i in range(min(5, len(sorted_rolls))):
+#             message += f"{sorted_rolls[i][0]}: {sorted_rolls[i][1]}%\n"
+        
+#         # Поздравляем участника с самым большим броском
+#         message += f"\nПоздравляем {sorted_rolls[0][0]}! Ты Гей дня с рейтингом {sorted_rolls[0][1]}%!"
+        
+#         await update.message.reply_text(message)
+#     else:
+#         await update.message.reply_text("В этой группе пока нет активных участников.")
+
+
+
+def main() -> None:
+    # Создаем экземпляр бота и передаем ему токен вашего бота
+    application = Application.builder().token("6696148424:AAG6-hZc4c2SAEEJwpU5QSp5smdK77ijcGI").build()
+
+    # Регистрируем обработчики
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
+    application.add_handler(MessageHandler(filters.TEXT, handle_message))
+
+
+    # Запускаем бота
+    application.run_polling()
+
+
 
 
 
