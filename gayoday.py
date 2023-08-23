@@ -44,16 +44,17 @@ async def greet_new_members(update: Update, context) -> None:
 # Функция "Гей дня"
 async def gay_of_the_day(update: Update, context) -> None:
     chat_id = update.effective_chat.id
-    members = await context.bot.get_chat_members_count(chat_id)
+    members_list = await context.bot.get_chat_members(chat_id)
+    members_count = len(members_list)
     
     # Словарь для хранения участников и их рейтинга
     members_rating = {}
     
     # Проходимся по каждому участнику и присваиваем ему рейтинг
-    for i in range(1, members + 1):
-        user = await context.bot.get_chat_member(chat_id, i)
+    for i in range(1, members_count + 1):
+        user = members_list[i].user
         score = random.randint(0, 100)
-        members_rating[user.user.first_name] = score
+        members_rating[user.first_name] = score
     
     # Сортируем участников по рейтингу
     sorted_members = sorted(members_rating.items(), key=lambda x: x[1], reverse=True)
@@ -63,7 +64,7 @@ async def gay_of_the_day(update: Update, context) -> None:
     for member, rating in sorted_members:
         message += f"{member}: {rating}%\n"
     
-    await update.message.reply_text(message)    
+    await update.message.reply_text(message)  
 
 def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
