@@ -32,46 +32,12 @@ async def greet_new_members(update: Update, context) -> None:
             with open("moydodir.jpg", "rb") as photo:
                 await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)        
 
-# # Функция "Гей дня"
-# async def gay_of_the_day(update: Update, context) -> None:
-#     chat_id = update.effective_chat.id
-#     members = await context.bot.get_chat_members_count(chat_id)
-#     random_member = random.randint(1, members)
-#     user = await context.bot.get_chat_member(chat_id, random_member)
-#     score = random.randint(0, 100)
-#     await update.message.reply_text(f"Гей дня: {user.user.first_name} с гей-рейтингом {score}%!")
-
-# Функция "Гей дня"
-async def gay_of_the_day(update: Update, context) -> None:
-    chat_id = update.effective_chat.id
-    members = await context.bot.get_chat_members_count(chat_id)
-    
-    # Словарь для хранения участников и их рейтинга
-    members_rating = {}
-    
-    # Проходимся по каждому участнику и присваиваем ему рейтинг
-    for i in range(1, members + 1):
-        user = await context.bot.get_chat_member(chat_id, i)
-        score = random.randint(0, 100)
-        members_rating[user.user.first_name] = score
-    
-    # Сортируем участников по рейтингу
-    sorted_members = sorted(members_rating.items(), key=lambda x: x[1], reverse=True)
-    
-    # Формируем сообщение
-    message = "Насколько ты сегодня пидрила:\n"
-    for member, rating in sorted_members:
-        message += f"{member}: {rating}%\n"
-    
-    await update.message.reply_text(message)    
-
 def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
     application = Application.builder().token("6696148424:AAG6-hZc4c2SAEEJwpU5QSp5smdK77ijcGI").build()
 
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("whoispidor", gay_of_the_day))
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
 
