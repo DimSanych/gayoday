@@ -73,6 +73,9 @@ async def track_active_members(update: Update, context) -> None:
     
     group_members[chat_id].add(user_id)
 
+    # Сохраняем обновленный список участников в JSON
+    save_to_json()
+
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
     chat_id = update.effective_chat.id
@@ -86,6 +89,9 @@ async def track_members_status(update: Update, context) -> None:
         user_id = update.message.left_chat_member.id
         if chat_id in group_members and user_id in group_members[chat_id]:
             group_members[chat_id].remove(user_id)
+    
+    # Сохраняем обновленный список участников в JSON
+    save_to_json()
 
 #Сохранение и загрузка данных из JSON
 def save_to_json():
