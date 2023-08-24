@@ -5,6 +5,7 @@ import random
 import os
 from telegram import InputFile
 import json
+import telegram
 
 class GetUpdatesFilter(logging.Filter):
     def filter(self, record):
