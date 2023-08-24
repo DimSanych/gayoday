@@ -145,7 +145,13 @@ async def members_list(update: Update, context) -> None:
                 full_name += " " + member_info.user.last_name
             # members_names.append(full_name)
 
-            member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            # member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            # members_names.append(member_mention)
+
+            if member_info.user.username:
+                member_mention = f'<a href="https://t.me/{member_info.user.username}">{full_name}</a>'
+            else:
+                member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
             members_names.append(member_mention)
         
         # Преобразуем список имен в строку и отправляем ее в чат
