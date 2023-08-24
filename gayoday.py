@@ -139,20 +139,15 @@ async def members_list(update: Update, context) -> None:
             member_info = await context.bot.get_chat_member(chat_id, user_id)
             
 
-            # Добавляем имя участника в список
+            # Формируем полное имя участника
             full_name = member_info.user.first_name
             if member_info.user.last_name:
                 full_name += " " + member_info.user.last_name
-            # members_names.append(full_name)
-
-            # member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
-            # members_names.append(member_mention)
-
-            if member_info.user.username:
-                member_mention = f'<a href="https://t.me/{member_info.user.username}">{full_name}</a>'
-            else:
-                member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            
+            # Создаем ссылку на профиль участника с его полным именем
+            member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
             members_names.append(member_mention)
+            
         
         # Преобразуем список имен в строку и отправляем ее в чат
         members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>")
