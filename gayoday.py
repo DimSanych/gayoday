@@ -144,7 +144,7 @@ async def members_list(update: Update, context) -> None:
             members_names.append(full_name)
         
         # Преобразуем список имен в строку и отправляем ее в чат
-        members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>")
+        members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>", parse_mode='HTML')
         await update.message.reply_text("\n".join(members_names))
     else:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
