@@ -167,15 +167,27 @@ def main() -> None:
     # Создаем экземпляр бота и передаем ему токен вашего бота
     application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
 
-    # Регистрируем обработчики
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
-    application.add_handler(MessageHandler(filters.TEXT, handle_message))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members))
-    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status))
-    #Тестовые обработчики
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user))
+    # # Регистрируем обработчики
+    # application.add_handler(CommandHandler("start", start))
+    # application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
+    # application.add_handler(MessageHandler(filters.TEXT, handle_message))
+    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members))
+    # application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status))
+    # #Тестовые обработчики
+    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition))
+    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user))
+
+# Группа 0: Обработчики участников чата
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members), group=0)
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members), group=0)
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=0)
+    
+    # Группа 1: Обработчики текстовых сообщений
+    application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
+    
+    # Группа 2: Тестовые обработчики
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user), group=2)
 
 
 
