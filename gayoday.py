@@ -188,7 +188,7 @@ def main() -> None:
     # Группа 1: Обработчики текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_command))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_command), group=2)
     
     # Запускаем бота
     application.run_polling()
