@@ -120,36 +120,31 @@ def load_from_json():
     except (FileNotFoundError, json.JSONDecodeError):
         group_members = {}
 
-# #Функция пидора дня
-# async def gay_of_the_day(update: Update, context) -> None:
-#     # Загружаем актуальный список участников из JSON
-#     load_from_json()
-
-#     chat_id = update.effective_chat.id
-#     if chat_id in group_members:
-#         members_list = list(group_members[chat_id])
+# Функция для вывода списка участников группы из файла .json
+async def members_list(update: Update, context) -> None:
+    # Получаем ID чата
+    chat_id = update.effective_chat.id
+    
+    # Загружаем данные из файла .json
+    load_from_json()
+    
+    # Проверяем, есть ли этот чат в нашем словаре участников
+    if chat_id in group_members:
+        # Инициализируем пустой список для имен участников
+        members_names = []
         
-#         # Словарь для хранения результатов бросков
-#         dice_rolls = {}
+        # Проходимся по каждому ID участника в этом чате
+        for user_id in group_members[chat_id]:
+            # Получаем информацию о участнике по его ID
+            member_info = await context.bot.get_chat_member(chat_id, user_id)
+            # Добавляем имя участника в список
+            members_names.append(member_info.user.first_name)
         
-#         for member_id in members_list:
-#             member = await context.bot.get_chat_member(chat_id, member_id)
-#             dice_rolls[member.user.first_name] = random.randint(0, 100)
-        
-#         # Сортируем участников по результатам броска в порядке убывания
-#         sorted_rolls = sorted(dice_rolls.items(), key=lambda x: x[1], reverse=True)
-        
-#         # Формируем сообщение с топ-5 участниками
-#         message = "Топ-5 участников сегодня:\n"
-#         for i in range(min(5, len(sorted_rolls))):
-#             message += f"{sorted_rolls[i][0]}: {sorted_rolls[i][1]}%\n"
-        
-#         # Поздравляем участника с самым большим броском
-#         message += f"\nПоздравляем {sorted_rolls[0][0]}! Ты Гей дня с рейтингом {sorted_rolls[0][1]}%!"
-        
-#         await update.message.reply_text(message)
-#     else:
-#         await update.message.reply_text("В этой группе пока нет активных участников.")
+        # Преобразуем список имен в строку и отправляем ее в чат
+        await update.message.reply_text("\n".join(members_names))
+    else:
+        # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
+        await update.message.reply_text("В этой группе пока еще нет пидрил.")
 
 
 
@@ -179,6 +174,7 @@ def main() -> None:
     # Группа 1: Обработчики текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
+    application.add_handler(CommandHandler("members", members_list), group=0)
     
     # Группа 2: Тестовые обработчики
     # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
