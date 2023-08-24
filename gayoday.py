@@ -165,6 +165,7 @@ def main() -> None:
 
 
 
+
     # Запускаем бота
     application.run_polling()
 
