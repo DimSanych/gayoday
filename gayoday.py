@@ -137,11 +137,16 @@ async def members_list(update: Update, context) -> None:
         for user_id in group_members[str(chat_id)]:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, user_id)
+            
+
             # Добавляем имя участника в список
             full_name = member_info.user.first_name
             if member_info.user.last_name:
                 full_name += " " + member_info.user.last_name
-            members_names.append(full_name)
+            # members_names.append(full_name)
+
+            member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            members_names.append(member_mention)
         
         # Преобразуем список имен в строку и отправляем ее в чат
         members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>")
@@ -159,19 +164,10 @@ def main() -> None:
 
     # Создаем экземпляр бота и передаем ему токен вашего бота
     # # Регистрируем обработчики
-    application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
+    application = Application.builder().token("6696148424:AAET0jqVNxWOYQbDtRKyWos4VUbaqDSgf-M").build()
 
-    # # Регистрируем обработчики
-    # application.add_handler(CommandHandler("start", start))
-    # application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
-    # application.add_handler(MessageHandler(filters.TEXT, handle_message))
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members))
-    # application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status))
-    # #Тестовые обработчики
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition))
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user))
 
-# Группа 0: Обработчики участников чата
+    # Группа 0: Обработчики участников чата
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members), group=0)
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members), group=0)
     
@@ -180,19 +176,8 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
     application.add_handler(CommandHandler("members", members_list), group=0)
     
-    # Группа 2: Тестовые обработчики
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user), group=2)
-
-
-
-
-
     # Запускаем бота
     application.run_polling()
-
-
-
 
 
 if __name__ == "__main__":
