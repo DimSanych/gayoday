@@ -8,7 +8,7 @@ import json
 
 class GetUpdatesFilter(logging.Filter):
     def filter(self, record):
-        return "getUpdates" not in record.msg
+        return "getUpdates" not in record.getMessage()
     
 filter = GetUpdatesFilter()
 httpx_logger = logging.getLogger("httpx")
@@ -160,6 +160,9 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members))
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status))
+
 
 
     # Запускаем бота
