@@ -6,7 +6,13 @@ import os
 from telegram import InputFile
 import json
 
-
+class GetUpdatesFilter(logging.Filter):
+    def filter(self, record):
+        return "getUpdates" not in record.msg
+    
+filter = GetUpdatesFilter()
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.addFilter(filter)
 
 # Включаем логирование
 logging.basicConfig(
