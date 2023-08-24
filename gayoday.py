@@ -44,7 +44,7 @@ async def handle_message(update: Update, context) -> None:
         user_message = update.message.text.lower()  # Преобразуем сообщение в нижний регистр
         for phrase in PIDOR_PHRASES:
             if phrase in user_message:
-                images_dir = "/tipidr"
+                images_dir = "tipidr"
 
             # Если одна из ключевых фраз найдена в сообщении
                 images = [os.path.join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('.jpg')]
