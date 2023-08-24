@@ -58,77 +58,77 @@ async def handle_message(update: Update, context) -> None:
 
 
 
-# #Функционал Гея дня
+#Функционал Гея дня
 
-# # Словарь для хранения участников каждой группы
-# group_members = {}
+# Словарь для хранения участников каждой группы
+group_members = {}
 
-# #Отслеживание активных участников
-# async def track_active_members(update: Update, context) -> None:
-#     chat_id = update.effective_chat.id
-#     user_id = update.message.from_user.id
+#Отслеживание активных участников
+async def track_active_members(update: Update, context) -> None:
+    chat_id = update.effective_chat.id
+    user_id = update.message.from_user.id
     
-#     if chat_id not in group_members:
-#         group_members[chat_id] = set()
+    if chat_id not in group_members:
+        group_members[chat_id] = set()
     
-#     group_members[chat_id].add(user_id)
+    group_members[chat_id].add(user_id)
 
-# #Отслеживание новых участников и исключение покинувших
-# async def track_members_status(update: Update, context) -> None:
-#     chat_id = update.effective_chat.id
+#Отслеживание новых участников и исключение покинувших
+async def track_members_status(update: Update, context) -> None:
+    chat_id = update.effective_chat.id
 
-#     for user in update.message.new_chat_members:
-#         if chat_id not in group_members:
-#             group_members[chat_id] = set()
-#         group_members[chat_id].add(user.id)
+    for user in update.message.new_chat_members:
+        if chat_id not in group_members:
+            group_members[chat_id] = set()
+        group_members[chat_id].add(user.id)
     
-#     if update.message.left_chat_member:
-#         user_id = update.message.left_chat_member.id
-#         if chat_id in group_members and user_id in group_members[chat_id]:
-#             group_members[chat_id].remove(user_id)
+    if update.message.left_chat_member:
+        user_id = update.message.left_chat_member.id
+        if chat_id in group_members and user_id in group_members[chat_id]:
+            group_members[chat_id].remove(user_id)
 
-# #Сохранение и загрузка данных из JSON
-# def save_to_json():
-#     with open("group_members.json", "w") as file:
-#         json.dump(group_members, file)
+#Сохранение и загрузка данных из JSON
+def save_to_json():
+    with open("group_members.json", "w") as file:
+        json.dump(group_members, file)
 
-# def load_from_json():
-#     global group_members
-#     try:
-#         with open("group_members.json", "r") as file:
-#             group_members = json.load(file)
-#     except FileNotFoundError:
-#         group_members = {}
+def load_from_json():
+    global group_members
+    try:
+        with open("group_members.json", "r") as file:
+            group_members = json.load(file)
+    except FileNotFoundError:
+        group_members = {}
 
-#Функция пидора дня
-# async def gay_of_the_day(update: Update, context) -> None:
-#     # Загружаем актуальный список участников из JSON
-#     load_from_json()
+# # #Функция пидора дня
+# # async def gay_of_the_day(update: Update, context) -> None:
+# #     # Загружаем актуальный список участников из JSON
+# #     load_from_json()
 
-#     chat_id = update.effective_chat.id
-#     if chat_id in group_members:
-#         members_list = list(group_members[chat_id])
+# #     chat_id = update.effective_chat.id
+# #     if chat_id in group_members:
+# #         members_list = list(group_members[chat_id])
         
-#         # Словарь для хранения результатов бросков
-#         dice_rolls = {}
+# #         # Словарь для хранения результатов бросков
+# #         dice_rolls = {}
         
-#         for member_id in members_list:
-#             member = await context.bot.get_chat_member(chat_id, member_id)
-#             dice_rolls[member.user.first_name] = random.randint(0, 100)
+# #         for member_id in members_list:
+# #             member = await context.bot.get_chat_member(chat_id, member_id)
+# #             dice_rolls[member.user.first_name] = random.randint(0, 100)
         
-#         # Сортируем участников по результатам броска в порядке убывания
-#         sorted_rolls = sorted(dice_rolls.items(), key=lambda x: x[1], reverse=True)
+# #         # Сортируем участников по результатам броска в порядке убывания
+# #         sorted_rolls = sorted(dice_rolls.items(), key=lambda x: x[1], reverse=True)
         
-#         # Формируем сообщение с топ-5 участниками
-#         message = "Топ-5 участников сегодня:\n"
-#         for i in range(min(5, len(sorted_rolls))):
-#             message += f"{sorted_rolls[i][0]}: {sorted_rolls[i][1]}%\n"
+# #         # Формируем сообщение с топ-5 участниками
+# #         message = "Топ-5 участников сегодня:\n"
+# #         for i in range(min(5, len(sorted_rolls))):
+# #             message += f"{sorted_rolls[i][0]}: {sorted_rolls[i][1]}%\n"
         
-#         # Поздравляем участника с самым большим броском
-#         message += f"\nПоздравляем {sorted_rolls[0][0]}! Ты Гей дня с рейтингом {sorted_rolls[0][1]}%!"
+# #         # Поздравляем участника с самым большим броском
+# #         message += f"\nПоздравляем {sorted_rolls[0][0]}! Ты Гей дня с рейтингом {sorted_rolls[0][1]}%!"
         
-#         await update.message.reply_text(message)
-#     else:
+# #         await update.message.reply_text(message)
+# #     else:
 #         await update.message.reply_text("В этой группе пока нет активных участников.")
 
 
