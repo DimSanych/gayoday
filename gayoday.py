@@ -40,7 +40,6 @@ async def greet_new_members(update: Update, context) -> None:
                 await context.bot.send_photo(chat_id=update.effective_chat.id, photo=photo)        
 
 #Функция ответа на ключевые фразы
-
 # Список фраз, на которые бот будет реагировать
 PIDOR_PHRASES = ["пидр", "пидар", "пидор"]
 
@@ -61,6 +60,18 @@ async def handle_message(update: Update, context) -> None:
 
                 break  # Выходим из цикла после отправки изображения
 
+#Тестовые функции
+async def save_on_condition(update: Update, context) -> None:
+    if "тест" in update.message.text.lower():
+        with open("group_members.json", "a") as file:
+            file.write(f"{update.message.from_user.first_name} написал 'тест' в {update.effective_chat.title}\n")
+
+async def log_new_user(update: Update, context) -> None:
+    chat_id = update.effective_chat.id
+    user_id = update.message.from_user.id
+    
+    if chat_id not in group_members or user_id not in group_members[chat_id]:
+        logger.info(f"Новый пользователь {update.message.from_user.first_name} написал в чате {update.effective_chat.title}")
 
 
 
@@ -162,6 +173,10 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.TEXT, handle_message))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members))
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status))
+    #Тестовые обработчики
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user))
+
 
 
 
