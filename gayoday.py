@@ -134,7 +134,7 @@ async def members_list(update: Update, context) -> None:
         members_names = []
         
         # Проходимся по каждому ID участника в этом чате
-        for user_id in group_members[chat_id]:
+        for user_id in group_members[str(chat_id)]:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, user_id)
             # Добавляем имя участника в список
