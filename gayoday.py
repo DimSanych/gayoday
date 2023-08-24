@@ -120,13 +120,17 @@ async def track_members_status(update: Update, context) -> None:
 #Сохранение и загрузка данных из JSON
 def save_to_json():
     with open("group_members.json", "w") as file:
-        json.dump(group_members, file)
+        # Преобразовываем множества в списки перед сохранением
+        json_data = {chat_id: list(user_ids) for chat_id, user_ids in group_members.items()}
+        json.dump(json_data, file)
 
 def load_from_json():
     global group_members
     try:
         with open("group_members.json", "r") as file:
-            group_members = json.load(file)
+            json_data = json.load(file)
+            # Преобразовываем списки обратно в множества после загрузки
+            group_members = {chat_id: set(user_ids) for chat_id, user_ids in json_data.items()}
     except FileNotFoundError:
         group_members = {}
 
