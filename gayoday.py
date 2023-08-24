@@ -61,17 +61,17 @@ async def handle_message(update: Update, context) -> None:
                 break  # Выходим из цикла после отправки изображения
 
 #Тестовые функции
-async def save_on_condition(update: Update, context) -> None:
-    if "тест" in update.message.text.lower():
-        with open("group_members.json", "a") as file:
-            file.write(f"{update.message.from_user.first_name} написал 'тест' в {update.effective_chat.title}\n")
+# async def save_on_condition(update: Update, context) -> None:
+#     if "тест" in update.message.text.lower():
+#         with open("group_members.json", "a") as file:
+#             file.write(f"{update.message.from_user.first_name} написал 'тест' в {update.effective_chat.title}\n")
 
-async def log_new_user(update: Update, context) -> None:
-    chat_id = update.effective_chat.id
-    user_id = update.message.from_user.id
+# async def log_new_user(update: Update, context) -> None:
+#     chat_id = update.effective_chat.id
+#     user_id = update.message.from_user.id
     
-    if chat_id not in group_members or user_id not in group_members[chat_id]:
-        logger.info(f"Новый пользователь {update.message.from_user.first_name} написал в чате {update.effective_chat.title}")
+#     if chat_id not in group_members or user_id not in group_members[chat_id]:
+#         logger.info(f"Новый пользователь {update.message.from_user.first_name} написал в чате {update.effective_chat.title}")
 
 
 
@@ -190,8 +190,8 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
     
     # Группа 2: Тестовые обработчики
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user), group=2)
+    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
+    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, log_new_user), group=2)
 
 
 
