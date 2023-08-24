@@ -60,21 +60,6 @@ async def handle_message(update: Update, context) -> None:
 
                 break  # Выходим из цикла после отправки изображения
 
-#Тестовые функции
-# async def save_on_condition(update: Update, context) -> None:
-#     if "тест" in update.message.text.lower():
-#         with open("group_members.json", "a") as file:
-#             file.write(f"{update.message.from_user.first_name} написал 'тест' в {update.effective_chat.title}\n")
-
-# async def log_new_user(update: Update, context) -> None:
-#     chat_id = update.effective_chat.id
-#     user_id = update.message.from_user.id
-    
-#     if chat_id not in group_members or user_id not in group_members[chat_id]:
-#         logger.info(f"Новый пользователь {update.message.from_user.first_name} написал в чате {update.effective_chat.title}")
-
-
-
 #Функционал Гея дня
 
 # Словарь для хранения участников каждой группы
@@ -88,10 +73,11 @@ async def track_active_members(update: Update, context) -> None:
     if chat_id not in group_members:
         group_members[chat_id] = set()
         
-    group_members[chat_id].add(user_id)
-    logger.info(f"User {user_id} added to active members in chat {chat_id}.")
-    # Сохраняем обновленный список участников в JSON
-    save_to_json()
+    if user_id not in group_members[chat_id]:
+        group_members[chat_id].add(user_id)
+        logger.info(f"User {user_id} added to active members in chat {chat_id}.")
+        # Сохраняем обновленный список участников в JSON
+        save_to_json()
     
 
 #Отслеживание новых участников и исключение покинувших
