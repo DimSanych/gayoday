@@ -79,7 +79,12 @@ async def track_active_members(update: Update, context) -> None:
         logger.info(f"User {user_id} added to active members in chat {chat_id}.")
         # Сохраняем обновленный список участников в JSON
         save_to_json()
-    
+
+
+    # Проверка на команду /члены
+    # Засунул сюда чтобы сидели на одном обработчике
+    if update.message.text == "/члены":
+        return await members_list(update, context)
 
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
@@ -167,9 +172,9 @@ async def members_list(update: Update, context) -> None:
         await update.message.reply_text("В этой группе пока еще нет пидрил.")
 
 
-def check_command(update, context):
-    if update.message.text == "/члены":
-        return members_list(update, context)
+# def check_command(update, context):
+#     if update.message.text == "/члены":
+#         return members_list(update, context)
 
 def main() -> None:
 
@@ -188,7 +193,6 @@ def main() -> None:
     # Группа 1: Обработчики текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_command), group=2)
     
     # Запускаем бота
     application.run_polling()
