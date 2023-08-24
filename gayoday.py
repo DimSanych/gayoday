@@ -129,7 +129,7 @@ async def members_list(update: Update, context) -> None:
     load_from_json()
     
     # Проверяем, есть ли этот чат в нашем словаре участников
-    if chat_id in group_members:
+    if str(chat_id) in group_members:
         # Инициализируем пустой список для имен участников
         members_names = []
         
