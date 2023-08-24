@@ -144,8 +144,12 @@ async def members_list(update: Update, context) -> None:
             if member_info.user.last_name:
                 full_name += " " + member_info.user.last_name
             
-            # Создаем ссылку на профиль участника с его полным именем
-            member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            # Если у пользователя есть username, создаем ссылку на его профиль
+            if member_info.user.username:
+                member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
+            else:
+                member_mention = full_name  # Просто показываем имя и фамилию без ссылки
+            
             members_names.append(member_mention)
             
         
