@@ -108,7 +108,7 @@ def save_to_json():
     with open("group_members.json", "w") as file:
         # Преобразовываем множества в списки перед сохранением
         json_data = {chat_id: list(user_ids) for chat_id, user_ids in group_members.items()}
-        json.dump(json_data, file)
+        json.dump(json_data, file, indent=4)
 
 def load_from_json():
     global group_members
@@ -138,9 +138,13 @@ async def members_list(update: Update, context) -> None:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, user_id)
             # Добавляем имя участника в список
-            members_names.append(member_info.user.first_name)
+            full_name = member_info.user.first_name
+            if member_info.user.last_name:
+                full_name += " " + member_info.user.last_name
+            members_names.append(full_name)
         
         # Преобразуем список имен в строку и отправляем ее в чат
+        members_names.insert(0, "Участники клуба любителей пощекотать очко:")
         await update.message.reply_text("\n".join(members_names))
     else:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
