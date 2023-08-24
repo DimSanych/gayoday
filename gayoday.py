@@ -157,7 +157,7 @@ def main() -> None:
 
     # Создаем экземпляр бота и передаем ему токен вашего бота
     # # Регистрируем обработчики
-    application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
+    application = Application.builder().token("6696148424:AAET0jqVNxWOYQbDtRKyWos4VUbaqDSgf-M").build()
 
 
     # Группа 0: Обработчики участников чата
