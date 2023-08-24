@@ -137,21 +137,11 @@ async def members_list(update: Update, context) -> None:
         for user_id in group_members[str(chat_id)]:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, user_id)
-            
-
-            # Формируем полное имя участника
+            # Добавляем имя участника в список
             full_name = member_info.user.first_name
             if member_info.user.last_name:
                 full_name += " " + member_info.user.last_name
-            
-            # Если у пользователя есть username, создаем ссылку на его профиль
-            if member_info.user.username:
-                member_mention = f'<a href="tg://user?id={member_info.user.id}">{full_name}</a>'
-            else:
-                member_mention = full_name  # Просто показываем имя и фамилию без ссылки
-            
-            members_names.append(member_mention)
-            
+            members_names.append(full_name)
         
         # Преобразуем список имен в строку и отправляем ее в чат
         members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>")
@@ -160,8 +150,6 @@ async def members_list(update: Update, context) -> None:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
         await update.message.reply_text("В этой группе пока еще нет пидрил.")
 
-
-
 def main() -> None:
 
     #Загружаем список пользователей   
@@ -169,7 +157,7 @@ def main() -> None:
 
     # Создаем экземпляр бота и передаем ему токен вашего бота
     # # Регистрируем обработчики
-    application = Application.builder().token("6696148424:AAET0jqVNxWOYQbDtRKyWos4VUbaqDSgf-M").build()
+    application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
 
 
     # Группа 0: Обработчики участников чата
