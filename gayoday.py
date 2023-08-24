@@ -103,6 +103,7 @@ async def track_members_status(update: Update, context) -> None:
             group_members[chat_id] = set()
         group_members[chat_id].add(user.id)
         logger.info(f"New user {user.id} added to chat {chat_id}.")
+
         
     
     if update.message.left_chat_member:
@@ -171,6 +172,7 @@ def main() -> None:
     load_from_json()
 
     # Создаем экземпляр бота и передаем ему токен вашего бота
+    # # Регистрируем обработчики
     application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
 
     # # Регистрируем обработчики
