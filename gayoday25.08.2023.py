@@ -204,52 +204,25 @@ def generate_gay_of_the_day():
 
 # Обработчик команды /гейдня
 async def show_gay_of_the_day(update: Update, context):
-    # Загрузка данных из файла
-    with open(GAY_OF_THE_DAY_FILE, "r") as file:
-        gay_of_the_day_data = json.load(file)
-    
     chat_id = str(update.effective_chat.id)
-    
-    if chat_id in gay_of_the_day_data:
-        sorted_gays = sorted(gay_of_the_day_data[chat_id].items(), key=lambda x: x[1], reverse=True)
-        
-        # Формирование списка имен участников
-        members_names = []
-        for user_id, score in sorted_gays:
-            try:
-                # Получаем информацию о участнике по его ID
-                member_info = await context.bot.get_chat_member(chat_id, int(user_id))
-        
-                # Формируем полное имя участника
-                full_name = member_info.user.first_name
-                if member_info.user.last_name:
-                    full_name += " " + member_info.user.last_name
-        
-                # Если у пользователя есть username, формируем ссылку на его профиль
-                if member_info.user.username:
-                    user_link = f'<a href="tg://user?id={user_id}">{full_name}</a>'
-                else:
-                    user_link = full_name
-        
-                # Добавляем ссылку на профиль участника и его бросок в список
-                members_names.append(f"{user_link}: {score}")
 
-            except telegram.error.BadRequest:
-                logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
-        
-        # Отправляем список участников и их броски в чат
-        await update.message.reply_text("\n".join(members_names), parse_mode='HTML')
-        
-        # Отправляем поздравление участнику с наибольшим броском
-        winner_id, winner_score = sorted_gays[0]
-        winner_info = await context.bot.get_chat_member(chat_id, int(winner_id))
-        winner_name = winner_info.user.first_name
-        if winner_info.user.last_name:
-            winner_name += " " + winner_info.user.last_name
-        await update.message.reply_text(f"Поздравляю, пидор дня - {winner_name}!")
-    else:
-        await update.message.reply_text("Список геев дня пока еще не сформирован.")
+    # Пытаемся загрузить текущий список из файла
+    try:
+        with open(GAY_OF_THE_DAY_FILE, "r") as file:
+            gay_of_the_day = json.load(file)
+    except FileNotFoundError:
+        gay_of_the_day = generate_gay_of_the_day()
 
+    # Если в списке нет текущей группы, генерируем список заново
+    if chat_id not in gay_of_the_day:
+        gay_of_the_day = generate_gay_of_the_day()
+
+    ratings = gay_of_the_day[chat_id]
+    rating_message = "\n".join([f"{idx + 1}. {member}: {score}" for idx, (member, score) in enumerate(ratings.items())])
+    winner_message = f"Поздравляю, пидор дня - {list(ratings.keys())[0]}!"
+
+    await update.message.reply_text(rating_message)
+    await update.message.reply_text(winner_message)
 
 # Обработчик команды /сброс
 async def reset_gay_of_the_day(update: Update, context):
