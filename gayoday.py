@@ -166,6 +166,11 @@ async def members_list(update: Update, context) -> None:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
         await update.message.reply_text("В этой группе пока еще нет пидрил.")
 
+
+def check_command(update, context):
+    if update.message.text == "/члены":
+        return members_list(update, context)
+
 def main() -> None:
 
     #Загружаем список пользователей   
@@ -183,7 +188,7 @@ def main() -> None:
     # Группа 1: Обработчики текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
-    application.add_handler(CommandHandler("члены", members_list), group=0)
+    application.add_handler(MessageHandler(filters.text & ~filters.command, check_command))
     
     # Запускаем бота
     application.run_polling()
