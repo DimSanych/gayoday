@@ -5,7 +5,6 @@ import random
 import os
 from telegram import InputFile
 import json
-import telegram
 
 class GetUpdatesFilter(logging.Filter):
     def filter(self, record):
@@ -136,27 +135,13 @@ async def members_list(update: Update, context) -> None:
         
         # Проходимся по каждому ID участника в этом чате
         for user_id in group_members[str(chat_id)]:
-            try:
-                # Получаем информацию о участнике по его ID
-                member_info = await context.bot.get_chat_member(chat_id, user_id)
-        
-                # Формируем полное имя участника
-                full_name = member_info.user.first_name
-                if member_info.user.last_name:
-                    full_name += " " + member_info.user.last_name
-        
-                # Если у пользователя есть username, формируем ссылку на его профиль
-                if member_info.user.username:
-                    user_link = f'<a href="tg://user?id={user_id}">{full_name}</a>'
-                else:
-                    user_link = full_name
-        
-                # Добавляем ссылку на профиль участника в список
-                members_names.append(user_link)
-
-            except telegram.error.BadRequest:
-        # Если информация о пользователе не найдена, просто пропускаем этого пользователя
-                continue
+            # Получаем информацию о участнике по его ID
+            member_info = await context.bot.get_chat_member(chat_id, user_id)
+            # Добавляем имя участника в список
+            full_name = member_info.user.first_name
+            if member_info.user.last_name:
+                full_name += " " + member_info.user.last_name
+            members_names.append(full_name)
         
         # Преобразуем список имен в строку и отправляем ее в чат
         members_names.insert(0, "<b>Участники клуба любителей пощекотать очко:</b>")
@@ -164,6 +149,8 @@ async def members_list(update: Update, context) -> None:
     else:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
         await update.message.reply_text("В этой группе пока еще нет пидрил.")
+
+
 
 def main() -> None:
 
@@ -184,8 +171,13 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
     application.add_handler(CommandHandler("members", members_list), group=0)
     
+    
+
     # Запускаем бота
     application.run_polling()
+
+
+
 
 
 if __name__ == "__main__":
