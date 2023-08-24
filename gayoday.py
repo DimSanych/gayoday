@@ -98,6 +98,7 @@ async def track_active_members(update: Update, context) -> None:
 async def track_members_status(update: Update, context) -> None:
     chat_id = update.effective_chat.id
 
+    # Для новых участников
     for user in update.message.new_chat_members:
         if chat_id not in group_members:
             group_members[chat_id] = set()
@@ -130,7 +131,7 @@ def load_from_json():
             json_data = json.load(file)
             # Преобразовываем списки обратно в множества после загрузки
             group_members = {chat_id: set(user_ids) for chat_id, user_ids in json_data.items()}
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         group_members = {}
 
 # #Функция пидора дня
