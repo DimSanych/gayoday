@@ -67,7 +67,7 @@ group_members = {}
 
 #Отслеживание активных участников
 async def track_active_members(update: Update, context) -> None:
-    chat_id = update.effective_chat.id
+    chat_id = str(update.effective_chat.id)  # Преобразуем chat_id в строку
     user_id = update.message.from_user.id
     
     if chat_id not in group_members:
@@ -82,7 +82,7 @@ async def track_active_members(update: Update, context) -> None:
 
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
-    chat_id = update.effective_chat.id
+    chat_id = str(update.effective_chat.id)
 
     # Если ID чата еще нет в group_members, создаем новый ключ
     if chat_id not in group_members:
