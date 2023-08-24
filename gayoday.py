@@ -70,11 +70,13 @@ async def track_active_members(update: Update, context) -> None:
     
     if chat_id not in group_members:
         group_members[chat_id] = set()
+        print(f"Обнаружен новый пользователь {user_id}")
     
     group_members[chat_id].add(user_id)
 
     # Сохраняем обновленный список участников в JSON
     save_to_json()
+    
 
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
@@ -84,11 +86,13 @@ async def track_members_status(update: Update, context) -> None:
         if chat_id not in group_members:
             group_members[chat_id] = set()
         group_members[chat_id].add(user.id)
+        print(f"Обнаружен новый пользователь {user_id}")
     
     if update.message.left_chat_member:
         user_id = update.message.left_chat_member.id
         if chat_id in group_members and user_id in group_members[chat_id]:
             group_members[chat_id].remove(user_id)
+            print(f"Пользователь {user_id} удален из списка")
     
     # Сохраняем обновленный список участников в JSON
     save_to_json()
