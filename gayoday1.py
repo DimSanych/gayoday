@@ -27,7 +27,7 @@ def main() -> None:
     # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     #application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    #application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members))
 
 
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
 
 # Функция приветствия при добавлении бота в группу
-# async def greet_new_members(update: Update, context) -> None:
-#     for user in Update.message.NEW_CHAT_MEMBERS:
-#         if user.username == context.bot.username:
-#             await Update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")
+async def greet_new_members(update: Update, context) -> None:
+    for user in Update.message.NEW_CHAT_MEMBERS:
+        if user.username == context.bot.username:
+            await Update.message.reply_text("Я искал пидрильный клуб любителей пощекотать очко и похоже я его нашел! Всем привет!")

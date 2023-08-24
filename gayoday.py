@@ -6,6 +6,7 @@ import os
 from telegram import InputFile
 import json
 import telegram
+import datetime
 
 class GetUpdatesFilter(logging.Filter):
     def filter(self, record):
@@ -85,6 +86,11 @@ async def track_active_members(update: Update, context) -> None:
     # Засунул сюда чтобы сидели на одном обработчике
     if update.message.text == "/члены":
         return await members_list(update, context)
+    
+    if update.message.text == "/гейдня":
+        await show_gay_of_the_day(update, context)
+    elif update.message.text == "/сброс":
+        await reset_gay_of_the_day(update, context)
 
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
@@ -170,6 +176,61 @@ async def members_list(update: Update, context) -> None:
     else:
         # Если этого чата нет в нашем словаре, отправляем соответствующее сообщение
         await update.message.reply_text("В этой группе пока еще нет пидрил.")
+
+
+#Определение гея дня
+
+GAY_OF_THE_DAY_FILE = "gay_of_the_day.json"
+
+# Функция для генерации списка геев дня
+def generate_gay_of_the_day():
+    # Загружаем список активных участников
+    with open("group_members.json", "r") as file:
+        group_members = json.load(file)
+
+    gay_of_the_day = {}
+
+    # Для каждой группы генерируем рейтинг участников
+    for chat_id, members in group_members.items():
+        ratings = {member: random.randint(0, 100) for member in members}
+        sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
+        gay_of_the_day[chat_id] = sorted_ratings
+
+    # Сохраняем сгенерированный список в файл
+    with open(GAY_OF_THE_DAY_FILE, "w") as file:
+        json.dump(gay_of_the_day, file, indent=4)
+
+    return gay_of_the_day
+
+# Обработчик команды /гейдня
+async def show_gay_of_the_day(update: Update, context):
+    chat_id = str(update.effective_chat.id)
+
+    # Пытаемся загрузить текущий список из файла
+    try:
+        with open(GAY_OF_THE_DAY_FILE, "r") as file:
+            gay_of_the_day = json.load(file)
+    except FileNotFoundError:
+        gay_of_the_day = generate_gay_of_the_day()
+
+    # Если в списке нет текущей группы, генерируем список заново
+    if chat_id not in gay_of_the_day:
+        gay_of_the_day = generate_gay_of_the_day()
+
+    ratings = gay_of_the_day[chat_id]
+    rating_message = "\n".join([f"{idx + 1}. {member}: {score}" for idx, (member, score) in enumerate(ratings.items())])
+    winner_message = f"Поздравляю, пидор дня - {list(ratings.keys())[0]}!"
+
+    await update.message.reply_text(rating_message)
+    await update.message.reply_text(winner_message)
+
+# Обработчик команды /сброс
+async def reset_gay_of_the_day(update: Update, context):
+    generate_gay_of_the_day()
+    await update.message.reply_text("Список геев дня был сброшен и сгенерирован заново!")
+
+
+
 
 
 # def check_command(update, context):
