@@ -90,8 +90,6 @@ async def track_active_members(update: Update, context) -> None:
         
     group_members[chat_id].add(user_id)
     logger.info(f"User {user_id} added to active members in chat {chat_id}.")
-
-
     # Сохраняем обновленный список участников в JSON
     save_to_json()
     
@@ -168,6 +166,10 @@ def load_from_json():
 
 
 def main() -> None:
+
+    #Загружаем список пользователей   
+    load_from_json()
+
     # Создаем экземпляр бота и передаем ему токен вашего бота
     application = Application.builder().token("6696148424:AAE1JPSQJShBy_5SvPDODvdKRJ7H99xQ24c").build()
 
@@ -184,10 +186,10 @@ def main() -> None:
 # Группа 0: Обработчики участников чата
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, greet_new_members), group=0)
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, track_active_members), group=0)
-    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=0)
     
     # Группа 1: Обработчики текстовых сообщений
     application.add_handler(MessageHandler(filters.TEXT, handle_message), group=1)
+    application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS | filters.StatusUpdate.LEFT_CHAT_MEMBER, track_members_status), group=1)
     
     # Группа 2: Тестовые обработчики
     # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, save_on_condition), group=2)
