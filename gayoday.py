@@ -256,7 +256,14 @@ async def show_gay_of_the_day(update: Update, context):
         winner_name = winner_info.user.first_name
         if winner_info.user.last_name:
             winner_name += " " + winner_info.user.last_name
-        await update.message.reply_text(f"Поздравляю, пидор дня - {winner_name}!")
+
+        # Выбираем случайное видео из папки
+        videos_dir = "vids"  # Замените на путь к вашей папке с видео
+        videos = [os.path.join(videos_dir, f) for f in os.listdir(videos_dir) if f.endswith('.mp4')]
+        random_video = random.choice(videos)
+
+        with open(random_video, 'rb') as video:
+            await context.bot.send_video(chat_id=update.effective_chat.id, video=video, caption=f"Поздравляю, пидор дня - {winner_name}!")
     else:
         await update.message.reply_text("Список геев дня пока еще не сформирован.")
 
