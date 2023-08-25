@@ -203,6 +203,8 @@ def generate_gay_of_the_day():
     with open(GAY_OF_THE_DAY_FILE, "w") as file:
         json.dump(gay_of_the_day, file, indent=4)
 
+    save_daily_stats(chat_id, gay_of_the_day)
+
     return gay_of_the_day
 
 # Обработчик команды /гейдня
