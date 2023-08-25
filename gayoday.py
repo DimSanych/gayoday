@@ -263,7 +263,7 @@ async def show_gay_of_the_day(update: Update, context):
         random_video = random.choice(videos)
 
         with open(random_video, 'rb') as video:
-            await context.bot.send_video(chat_id=update.effective_chat.id, video=video, caption=f"Поздравляю, пидор дня - <b>{winner_name}</b>!", parse_mode='HTML')
+            await context.bot.send_animation(chat_id=update.effective_chat.id, video=video, caption=f"Поздравляю, пидор дня - <b>{winner_name}</b>!", parse_mode='HTML')
     else:
         await update.message.reply_text("Список геев дня пока еще не сформирован.")
 
