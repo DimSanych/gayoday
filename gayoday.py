@@ -314,11 +314,11 @@ def get_leaders(chat_id):
     leaders = {}
     for date, chats in stats.items():
         if str(chat_id) in chats:
-            winner = chats[str(chat_id)]['winner']
-            if winner in leaders:
-                leaders[winner] += 1
+            winner_id = chats[str(chat_id)]['winner_id']
+            if winner_id in leaders:
+                leaders[winner_id] += 1
             else:
-                leaders[winner] = 1
+                leaders[winner_id] = 1
 
     # Сортировка участников по количеству побед
     sorted_leaders = sorted(leaders.items(), key=lambda x: x[1], reverse=True)
