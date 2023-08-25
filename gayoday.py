@@ -302,7 +302,7 @@ def load_daily_stats():
         return {}
     
 #Формируем список лидеров
-def get_leaders(chat_id):
+async def get_leaders(chat_id, context):
     # Загрузка данных из файла
     try:
         with open("daily_stats.json", "r") as file:
@@ -326,8 +326,25 @@ def get_leaders(chat_id):
     # Формирование списка лидеров
     leaders_list = ["<b>Таблица лидеров:</b>"]
     for user_id, wins in sorted_leaders:
-        user_link = f'<a href="tg://user?id={user_id}">{user_id}</a>'
-        leaders_list.append(f"{user_link}: {wins} раз(а)")
+        try:
+            # Получаем информацию о участнике по его ID
+            member_info = await context.bot.get_chat_member(chat_id, int(user_id))
+    
+            # Формируем полное имя участника
+            full_name = member_info.user.first_name
+            if member_info.user.last_name:
+                full_name += " " + member_info.user.last_name
+    
+            # Если у пользователя есть username, формируем ссылку на его профиль
+            if member_info.user.username:
+                user_link = f'<a href="tg://user?id={user_id}">{full_name}</a>'
+            else:
+                user_link = full_name
+    
+            # Добавляем ссылку на профиль участника и его количество побед в список
+            leaders_list.append(f"{user_link}: {wins} раз(а)")
+        except telegram.error.BadRequest:
+            logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
 
     return "\n".join(leaders_list)
 
