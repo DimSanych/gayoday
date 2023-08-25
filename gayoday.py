@@ -262,9 +262,37 @@ async def show_gay_of_the_day(update: Update, context):
 
 
 # Обработчик команды /сброс
+# async def reset_gay_of_the_day(update: Update, context):
+#     generate_gay_of_the_day()
+#     await update.message.reply_text("Список геев дня был сброшен и сгенерирован заново!")
+
+# Обработчик команды /сброс
 async def reset_gay_of_the_day(update: Update, context):
-    generate_gay_of_the_day()
-    await update.message.reply_text("Список геев дня был сброшен и сгенерирован заново!")
+    chat_id = str(update.effective_chat.id)
+    
+    # Загрузка текущих данных из файла
+    with open(GAY_OF_THE_DAY_FILE, "r") as file:
+        gay_of_the_day_data = json.load(file)
+    
+    # Проверяем, есть ли этот чат в данных
+    if chat_id in gay_of_the_day_data:
+        # Генерируем новые данные только для этого чата
+        ratings = {str(member): random.randint(0, 100) for member in group_members[chat_id]}
+        sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
+        gay_of_the_day_data[chat_id] = sorted_ratings
+        members_scores = gay_of_the_day_data[chat_id]
+        winner_id = max(members_scores, key=members_scores.get)
+        winner_score = members_scores[winner_id]
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        save_daily_stats(current_date, chat_id, winner_id, winner_score, members_scores)
+
+        # Сохраняем обновленные данные обратно в файл
+        with open(GAY_OF_THE_DAY_FILE, "w") as file:
+            json.dump(gay_of_the_day_data, file, indent=4)
+        
+        await update.message.reply_text("Определен новый пидрильный список!")
+    else:
+        await update.message.reply_text("В этой группе пока еще нет данных о геях дня.")
 
 
 #Сбор статистики 
