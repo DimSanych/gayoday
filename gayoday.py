@@ -351,7 +351,7 @@ async def get_leaders(chat_id, context):
 #Функция отображения списка лидеров:
 async def show_leaders(update: Update, context) -> None:
     chat_id = update.effective_chat.id
-    leaders_message = get_leaders(chat_id)
+    leaders_message = await get_leaders(chat_id, context)
     await update.message.reply_text(leaders_message, parse_mode='HTML')    
 
 
