@@ -242,7 +242,7 @@ async def show_gay_of_the_day(update: Update, context):
                     user_link = full_name
         
                 # Добавляем ссылку на профиль участника и его бросок в список
-                members_names.append(f"{user_link} пидрила на {score}%")
+                members_names.append(f"{user_link} пидрила на <b>{score}</b>%")
 
             except telegram.error.BadRequest:
                 logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
