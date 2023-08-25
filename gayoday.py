@@ -198,12 +198,17 @@ def generate_gay_of_the_day():
         ratings = {member: random.randint(0, 100) for member in members}
         sorted_ratings = dict(sorted(ratings.items(), key=lambda item: item[1], reverse=True))
         gay_of_the_day[chat_id] = sorted_ratings
+        members_scores = gay_of_the_day[chat_id]
+        winner_id = max(members_scores, key=members_scores.get)
+        winner_score = members_scores[winner_id]
+        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        save_daily_stats(current_date, chat_id, winner_id, winner_score, members_scores)
+
 
     # Сохраняем сгенерированный список в файл
     with open(GAY_OF_THE_DAY_FILE, "w") as file:
         json.dump(gay_of_the_day, file, indent=4)
 
-    save_daily_stats(chat_id, gay_of_the_day)
 
     return gay_of_the_day
 
