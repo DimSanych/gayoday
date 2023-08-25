@@ -92,6 +92,9 @@ async def track_active_members(update: Update, context) -> None:
     elif update.message.text == "/сброс":
         await reset_gay_of_the_day(update, context)
 
+    if update.message.text == "/лидеры":
+        return await show_leaders(update, context)    
+
 #Отслеживание новых участников и исключение покинувших
 async def track_members_status(update: Update, context) -> None:
     chat_id = str(update.effective_chat.id)
@@ -257,12 +260,80 @@ async def reset_gay_of_the_day(update: Update, context):
     await update.message.reply_text("Список геев дня был сброшен и сгенерирован заново!")
 
 
+#Сбор статистики 
+
+DAILY_STATS_FILE = "daily_stats.json"
+
+def save_daily_stats(date, chat_id, winner_id, score, members_scores):
+    # Загрузим текущую статистику
+    try:
+        with open(DAILY_STATS_FILE, "r") as file:
+            daily_stats = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        daily_stats = {}
+
+    # Добавим или обновим информацию для данной даты и чата
+    if date not in daily_stats:
+        daily_stats[date] = {}
+
+    daily_stats[date][chat_id] = {
+        "winner_id": winner_id,
+        "score": score,
+        "members": members_scores
+    }
+
+    # Сохраняем обновленную статистику обратно в файл
+    with open(DAILY_STATS_FILE, "w") as file:
+        json.dump(daily_stats, file, indent=4)
+
+#Функция для загрузки ежедневной статистики
+def load_daily_stats():
+    try:
+        with open(DAILY_STATS_FILE, "r") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    
+#Формируем список лидеров
+def get_leaders(chat_id):
+    # Загрузка данных из файла
+    try:
+        with open("daily_stats.json", "r") as file:
+            stats = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return "Статистика пока не доступна."
+
+    # Подсчет побед для каждого участника
+    leaders = {}
+    for date, chats in stats.items():
+        if str(chat_id) in chats:
+            winner = chats[str(chat_id)]['winner']
+            if winner in leaders:
+                leaders[winner] += 1
+            else:
+                leaders[winner] = 1
+
+    # Сортировка участников по количеству побед
+    sorted_leaders = sorted(leaders.items(), key=lambda x: x[1], reverse=True)
+
+    # Формирование списка лидеров
+    leaders_list = ["<b>Таблица лидеров:</b>"]
+    for user_id, wins in sorted_leaders:
+        user_link = f'<a href="tg://user?id={user_id}">{user_id}</a>'
+        leaders_list.append(f"{user_link}: {wins} раз(а)")
+
+    return "\n".join(leaders_list)
+
+#Функция отображения списка лидеров:
+async def show_leaders(update: Update, context) -> None:
+    chat_id = update.effective_chat.id
+    leaders_message = get_leaders(chat_id)
+    await update.message.reply_text(leaders_message, parse_mode='HTML')    
 
 
 
-# def check_command(update, context):
-#     if update.message.text == "/члены":
-#         return members_list(update, context)
+
+
 
 def main() -> None:
 
