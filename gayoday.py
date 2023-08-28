@@ -372,7 +372,6 @@ async def get_leaders(chat_id, context):
     for date, chats in stats.items():
         if str(chat_id) in chats:
             gay_winner_id = chats[str(chat_id)]['winner_id']
-            chad_winner_id = chats[str(chat_id)]['chad_id']
             
             # For Gay of the Day
             if gay_winner_id in gay_leaders:
@@ -381,10 +380,12 @@ async def get_leaders(chat_id, context):
                 gay_leaders[gay_winner_id] = 1
 
             # For Chad of the Day
-            if chad_winner_id in chad_leaders:
-                chad_leaders[chad_winner_id] += 1
-            else:
-                chad_leaders[chad_winner_id] = 1
+            if 'chad_id' in chats[str(chat_id)]:  # Добавляем эту проверку
+                chad_winner_id = chats[str(chat_id)]['chad_id']
+                if chad_winner_id in chad_leaders:
+                    chad_leaders[chad_winner_id] += 1
+                else:
+                    chad_leaders[chad_winner_id] = 1
 
     # Сортировка участников по количеству побед
     sorted_gay_leaders = sorted(gay_leaders.items(), key=lambda x: x[1], reverse=True)
@@ -436,17 +437,18 @@ async def get_leaders(chat_id, context):
         except telegram.error.BadRequest:
             logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
 
-    await chat_id.message.reply_text("\n".join(gay_leaders_list), parse_mode='HTML')
-    return "\n".join(chad_leaders_list)
+    return gay_leaders_list, chad_leaders_list
+
     
     
 
 
 #Функция отображения списка лидеров:
-async def show_leaders(update: Update, context) -> None:
+async def show_leaders(update, context):
     chat_id = update.effective_chat.id
-    leaders_message = await get_leaders(chat_id, context)
-    await update.message.reply_text(leaders_message, parse_mode='HTML')    
+    gay_leaders_list, chad_leaders_list = await get_leaders(chat_id, context)
+    await update.message.reply_text("\n".join(gay_leaders_list), parse_mode='HTML')
+    await update.message.reply_text("\n".join(chad_leaders_list), parse_mode='HTML')
 
 
 
