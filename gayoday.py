@@ -70,7 +70,7 @@ group_members = {}
 #Отслеживание активных участников
 async def track_active_members(update: Update, context) -> None:
     chat_id = str(update.effective_chat.id)  # Преобразуем chat_id в строку
-    user_id = update.message.from_user.id
+    user_id = str(update.message.from_user.id)
     
     if chat_id not in group_members:
         group_members[chat_id] = set()
@@ -366,8 +366,6 @@ async def get_leaders(chat_id, context):
     except (FileNotFoundError, json.JSONDecodeError):
         return "Статистика пока не доступна."
 
-    # Подсчет побед для каждого участника
-    gay_leaders = {}
     # Подсчет побед для каждого участника
     gay_leaders = {}
     chad_leaders = {}
