@@ -368,31 +368,27 @@ async def get_leaders(chat_id, context):
 
     # Подсчет побед для каждого участника
     gay_leaders = {}
+    # Подсчет побед для каждого участника
+    gay_leaders = {}
     chad_leaders = {}
     for date, chats in stats.items():
         if str(chat_id) in chats:
             gay_winner_id = chats[str(chat_id)]['winner_id']
-            
-            # For Gay of the Day
-            if gay_winner_id in gay_leaders:
-                gay_leaders[gay_winner_id] += 1
-            else:
-                gay_leaders[gay_winner_id] = 1
+            chad_winner_id = chats[str(chat_id)]['chad_id']
+        
+            # Считаем чарт пидрил
+            gay_leaders[gay_winner_id] = gay_leaders.get(gay_winner_id, 0) + 1
 
             # For Chad of the Day
-            if 'chad_id' in chats[str(chat_id)]:  # Добавляем эту проверку
-                chad_winner_id = chats[str(chat_id)]['chad_id']
-                if chad_winner_id in chad_leaders:
-                    chad_leaders[chad_winner_id] += 1
-                else:
-                    chad_leaders[chad_winner_id] = 1
+            chad_leaders[chad_winner_id] = chad_leaders.get(chad_winner_id, 0) + 1
 
-    # Сортировка участников по количеству побед
+    # Считаем чарт Гигачадов
     sorted_gay_leaders = sorted(gay_leaders.items(), key=lambda x: x[1], reverse=True)
     sorted_chad_leaders = sorted(chad_leaders.items(), key=lambda x: x[1], reverse=True)
 
+
     # Формирование списка лидеров (Гей дня)
-    gay_leaders_list = ["<b>Таблица лидеров (Гей дня):</b>"]
+    gay_leaders_list = ["<b>Чарт клуба любителей пощекотать очко:</b>"]
     for user_id, wins in sorted_gay_leaders:
         try:
             # Получаем информацию о участнике по его ID
@@ -415,7 +411,7 @@ async def get_leaders(chat_id, context):
             logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
 
     # Формирование списка лидеров (Чед дня)
-    chad_leaders_list = ["<b>Таблица лидеров (Чед дня):</b>"]
+    chad_leaders_list = ["<b>Главные Гигачады группы:</b>"]
     for user_id, wins in sorted_chad_leaders:
         try:
             # Получаем информацию о участнике по его ID
