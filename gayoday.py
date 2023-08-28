@@ -278,7 +278,7 @@ async def show_gay_of_the_day(update: Update, context):
         chad_videos = [os.path.join(chad_videos_dir, f) for f in os.listdir(chad_videos_dir) if f.endswith('.mp4')]
         random_chad_video = random.choice(chad_videos)
 
-        chad_caption_text = f"Чед дня - <b>{chad_name}!</b>"
+        chad_caption_text = f"Гигачад дня - <b>{chad_name}!</b>"
         await context.bot.send_animation(chat_id=update.effective_chat.id, animation=open(random_chad_video, 'rb'), caption=chad_caption_text, parse_mode='HTML')
 
     else:
@@ -367,28 +367,32 @@ async def get_leaders(chat_id, context):
         return "Статистика пока не доступна."
 
     # Подсчет побед для каждого участника
-    leaders = {}
+    gay_leaders = {}
+    chad_leaders = {}
     for date, chats in stats.items():
         if str(chat_id) in chats:
-            winner_id = chats[str(chat_id)]['winner_id']
-            if winner_id in leaders:
-                leaders[winner_id] += 1
+            gay_winner_id = chats[str(chat_id)]['winner_id']
+            chad_winner_id = chats[str(chat_id)]['chad_id']
+            
+            # For Gay of the Day
+            if gay_winner_id in gay_leaders:
+                gay_leaders[gay_winner_id] += 1
             else:
-                leaders[winner_id] = 1
+                gay_leaders[gay_winner_id] = 1
+
+            # For Chad of the Day
+            if chad_winner_id in chad_leaders:
+                chad_leaders[chad_winner_id] += 1
+            else:
+                chad_leaders[chad_winner_id] = 1
 
     # Сортировка участников по количеству побед
-    sorted_leaders = sorted(leaders.items(), key=lambda x: x[1], reverse=True)
+    sorted_gay_leaders = sorted(gay_leaders.items(), key=lambda x: x[1], reverse=True)
+    sorted_chad_leaders = sorted(chad_leaders.items(), key=lambda x: x[1], reverse=True)
 
-    # Формирование списка лидеров
-    leaders_list = ["<b>Таблица лидеров:</b>"]
-    aggregated_leaders = {}
-    for user_id, wins in sorted_leaders:
-        if user_id in aggregated_leaders:
-            aggregated_leaders[user_id] += wins
-        else:
-            aggregated_leaders[user_id] = wins
-
-    for user_id, wins in aggregated_leaders.items():
+    # Формирование списка лидеров (Гей дня)
+    gay_leaders_list = ["<b>Таблица лидеров (Гей дня):</b>"]
+    for user_id, wins in sorted_gay_leaders:
         try:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, int(user_id))
@@ -405,11 +409,37 @@ async def get_leaders(chat_id, context):
                 user_link = full_name
     
             # Добавляем ссылку на профиль участника и его количество побед в список
-            leaders_list.append(f"{user_link}: {wins} раз")
+            gay_leaders_list.append(f"{user_link}: {wins} раз(а)")
         except telegram.error.BadRequest:
             logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
 
-    return "\n".join(leaders_list)
+    # Формирование списка лидеров (Чед дня)
+    chad_leaders_list = ["<b>Таблица лидеров (Чед дня):</b>"]
+    for user_id, wins in sorted_chad_leaders:
+        try:
+            # Получаем информацию о участнике по его ID
+            member_info = await context.bot.get_chat_member(chat_id, int(user_id))
+    
+            # Формируем полное имя участника
+            full_name = member_info.user.first_name
+            if member_info.user.last_name:
+                full_name += " " + member_info.user.last_name
+    
+            # Если у пользователя есть username, формируем ссылку на его профиль
+            if member_info.user.username:
+                user_link = f'<a href="tg://user?id={user_id}">{full_name}</a>'
+            else:
+                user_link = full_name
+    
+            # Добавляем ссылку на профиль участника и его количество побед в список
+            chad_leaders_list.append(f"{user_link}: {wins} раз(а)")
+        except telegram.error.BadRequest:
+            logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
+
+    await chat_id.message.reply_text("\n".join(gay_leaders_list), parse_mode='HTML')
+    return "\n".join(chad_leaders_list)
+    
+    
 
 
 #Функция отображения списка лидеров:
