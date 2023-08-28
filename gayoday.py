@@ -263,9 +263,24 @@ async def show_gay_of_the_day(update: Update, context):
         videos_dir = "vids"  # Замените на путь к вашей папке с видео
         videos = [os.path.join(videos_dir, f) for f in os.listdir(videos_dir) if f.endswith('.mp4')]
         random_video = random.choice(videos)
-
-        caption_text = f"<b>Поздравляю, пидор дня - {winner_name}!</b>"
+        
+        caption_text = f"Поздравляю, пидор дня - <b>{winner_name}!</b>"
         await context.bot.send_animation(chat_id=update.effective_chat.id, animation=open(random_video, 'rb'), caption=caption_text, parse_mode='HTML')
+
+        chad_id, chad_score = sorted_gays[-1]
+        chad_info = await context.bot.get_chat_member(chat_id, int(chad_id))
+        chad_name = chad_info.user.first_name
+        if chad_info.user.last_name:
+            chad_name += " " + chad_info.user.last_name
+
+        # Выбираем случайное видео из папки для Чеда дня
+        chad_videos_dir = "chad"  # Замените на путь к вашей папке с видео для Чеда дня
+        chad_videos = [os.path.join(chad_videos_dir, f) for f in os.listdir(chad_videos_dir) if f.endswith('.mp4')]
+        random_chad_video = random.choice(chad_videos)
+
+        chad_caption_text = f"Чед дня - <b>{chad_name}!</b>"
+        await context.bot.send_animation(chat_id=update.effective_chat.id, animation=open(random_chad_video, 'rb'), caption=chad_caption_text, parse_mode='HTML')
+
     else:
         await update.message.reply_text("Список геев дня пока еще не сформирован.")
 
