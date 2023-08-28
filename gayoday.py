@@ -200,9 +200,11 @@ def generate_gay_of_the_day():
         gay_of_the_day[chat_id] = sorted_ratings
         members_scores = gay_of_the_day[chat_id]
         winner_id = max(members_scores, key=members_scores.get)
+        chad_id = min(members_scores, key=members_scores.get)
         winner_score = members_scores[winner_id]
+        chad_score = members_scores[chad_id]
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        save_daily_stats(current_date, chat_id, winner_id, winner_score, members_scores)
+        save_daily_stats(current_date, chat_id, winner_id, winner_score, chad_id, chad_score, members_scores)
 
 
     # Сохраняем сгенерированный список в файл
@@ -290,14 +292,16 @@ async def reset_gay_of_the_day(update: Update, context):
         members_scores = gay_of_the_day_data[chat_id]
         winner_id = max(members_scores, key=members_scores.get)
         winner_score = members_scores[winner_id]
+        chad_id = min(members_scores, key=members_scores.get)
+        chad_score = members_scores[chad_id]
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        save_daily_stats(current_date, chat_id, winner_id, winner_score, members_scores)
+        save_daily_stats(current_date, chat_id, winner_id, winner_score, chad_id, chad_score, members_scores)
 
         # Сохраняем обновленные данные обратно в файл
         with open(GAY_OF_THE_DAY_FILE, "w") as file:
             json.dump(gay_of_the_day_data, file, indent=4)
         
-        await update.message.reply_text("Определен новый пидрильный список!")
+        await update.message.reply_text("Определен новый пидрильно-чадовый список!")
     else:
         await update.message.reply_text("В этой группе пока еще нет данных о геях дня.")
 
@@ -306,7 +310,7 @@ async def reset_gay_of_the_day(update: Update, context):
 
 DAILY_STATS_FILE = "daily_stats.json"
 
-def save_daily_stats(date, chat_id, winner_id, score, members_scores):
+def save_daily_stats(date, chat_id, winner_id, score, chad_id, chad_score, members_scores):
     # Загрузим текущую статистику
     try:
         with open(DAILY_STATS_FILE, "r") as file:
@@ -321,6 +325,8 @@ def save_daily_stats(date, chat_id, winner_id, score, members_scores):
     daily_stats[date][chat_id] = {
         "winner_id": winner_id,
         "score": score,
+        "chad_id": chad_id,
+        "chad_score": chad_score,
         "members": members_scores
     }
 
@@ -360,7 +366,14 @@ async def get_leaders(chat_id, context):
 
     # Формирование списка лидеров
     leaders_list = ["<b>Таблица лидеров:</b>"]
+    aggregated_leaders = {}
     for user_id, wins in sorted_leaders:
+        if user_id in aggregated_leaders:
+            aggregated_leaders[user_id] += wins
+        else:
+            aggregated_leaders[user_id] = wins
+
+    for user_id, wins in aggregated_leaders.items():
         try:
             # Получаем информацию о участнике по его ID
             member_info = await context.bot.get_chat_member(chat_id, int(user_id))
@@ -377,11 +390,12 @@ async def get_leaders(chat_id, context):
                 user_link = full_name
     
             # Добавляем ссылку на профиль участника и его количество побед в список
-            leaders_list.append(f"{user_link}: {wins} раз(а)")
+            leaders_list.append(f"{user_link}: {wins} раз")
         except telegram.error.BadRequest:
             logger.warning(f"Couldn't fetch data for user ID {user_id} in chat {chat_id}.")
 
     return "\n".join(leaders_list)
+
 
 #Функция отображения списка лидеров:
 async def show_leaders(update: Update, context) -> None:
