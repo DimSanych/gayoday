@@ -374,13 +374,15 @@ async def get_leaders(chat_id, context):
     for date, chats in stats.items():
         if str(chat_id) in chats:
             gay_winner_id = chats[str(chat_id)]['winner_id']
-            chad_winner_id = chats[str(chat_id)]['chad_id']
         
-            # Считаем чарт пидрил
+        # For Gay of the Day
             gay_leaders[gay_winner_id] = gay_leaders.get(gay_winner_id, 0) + 1
 
-            # For Chad of the Day
-            chad_leaders[chad_winner_id] = chad_leaders.get(chad_winner_id, 0) + 1
+        # For Chad of the Day
+            if 'chad_id' in chats[str(chat_id)]:  # Добавляем проверку на наличие ключа 'chad_id'
+                chad_winner_id = chats[str(chat_id)]['chad_id']
+                chad_leaders[chad_winner_id] = chad_leaders.get(chad_winner_id, 0) + 1
+
 
     # Считаем чарт Гигачадов
     sorted_gay_leaders = sorted(gay_leaders.items(), key=lambda x: x[1], reverse=True)
